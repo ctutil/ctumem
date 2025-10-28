@@ -1,6 +1,6 @@
-'From Cuis7.2 [latest update: #6897] on 28 October 2025 at 4:03:12 pm'!
+'From Cuis7.2 [latest update: #6897] on 28 October 2025 at 5:03:13 pm'!
 'Description '!
-!provides: 'CtuMem' 1 27!
+!provides: 'CtuMem' 1 28!
 !requires: 'FFI' 1 55 nil!
 SystemOrganization addCategory: #CtuMem!
 
@@ -38,9 +38,9 @@ check
 free
 	self extFree: cMem.! !
 
-!CtuMem methodsFor: 'public' stamp: 'ct 10/28/2025 15:45:13'!
+!CtuMem methodsFor: 'public' stamp: 'ct 10/28/2025 17:03:10'!
 getArray
-	self extGetArray: cMem.! !
+	^self extGetArray: cMem.! !
 
 !CtuMem methodsFor: 'public' stamp: 'ct 10/28/2025 15:40:44'!
 getAt: i
