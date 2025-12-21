@@ -1,13 +1,13 @@
-'From Cuis7.2 [latest update: #6897] on 28 October 2025 at 5:03:13 pm'!
+'From Cuis7.2 [latest update: #6897] on 20 December 2025 at 11:40:09 pm'!
 'Description '!
-!provides: 'CtuMem' 1 28!
+!provides: 'CtuMem' 1 32!
 !requires: 'FFI' 1 55 nil!
 SystemOrganization addCategory: #CtuMem!
 
 
 !classDefinition: #CtuMem category: #CtuMem!
 Object subclass: #CtuMem
-	instanceVariableNames: 'cMem size'
+	instanceVariableNames: 'cMem length'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CtuMem'!
@@ -46,6 +46,10 @@ getArray
 getAt: i
 	^self extGet: cMem at: i.! !
 
+!CtuMem methodsFor: 'public' stamp: 'ct 12/20/2025 23:39:26'!
+getLengthWithoutLast
+	^length - 1.! !
+
 !CtuMem methodsFor: 'external' stamp: 'ct 10/28/2025 15:42:27'!
 extAdd: aCMem string: aString
 	<cdecl: int32 'ctu_mem_add' (void* char*) module: 'ctumem'>
@@ -76,16 +80,16 @@ extGetArray: aCMem
 	^self externalCallFailed
 ! !
 
-!CtuMem methodsFor: 'external' stamp: 'ct 10/28/2025 15:35:26'!
-extInit: initialSize
+!CtuMem methodsFor: 'external' stamp: 'ct 12/20/2025 23:18:21'!
+extInit: initialLength
 	<cdecl: void* 'ctu_mem_init' (int32) module: 'ctumem'>
 	^self externalCallFailed
 ! !
 
-!CtuMem methodsFor: 'initialization' stamp: 'ct 10/28/2025 15:46:52'!
-with: aSize
-	size := aSize.
-	cMem := self extInit: size.! !
+!CtuMem methodsFor: 'initialization' stamp: 'ct 12/20/2025 23:18:07'!
+with: aLength
+	length := aLength.
+	cMem := self extInit: length.! !
 
 !CtuMem class methodsFor: 'constants' stamp: 'ct 10/28/2025 16:02:50'!
 MAX_STR_LEN
@@ -103,10 +107,10 @@ RESULT_ERROR_CAPACITY
 RESULT_SUCCESS
 	^0.! !
 
-!CtuMem class methodsFor: 'instance creation' stamp: 'ct 10/27/2025 14:53:22'!
-initWith: aSize
+!CtuMem class methodsFor: 'instance creation' stamp: 'ct 12/20/2025 23:17:08'!
+initWith: aLength
 	
-	^self new with: aSize; yourself.
+	^self new with: aLength; yourself.
 	! !
 
 !CtuMemTest methodsFor: 'cases' stamp: 'ct 10/28/2025 15:57:16'!
@@ -135,6 +139,20 @@ testExternal
 	self assert: (ctuMem extGet: cmem at: 1) fromCString equals: 'world'.
 
 	ctuMem extFree: cmem.! !
+
+!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/20/2025 23:39:52'!
+testLengthWithoutLast
+	| ctuMem |
+
+	ctuMem := CtuMem initWith: 3.
+
+	ctuMem add: 'Hello'.
+	ctuMem add: 'world'.
+	ctuMem add: nil.
+
+	self assert: (ctuMem getLengthWithoutLast) equals: 2.
+
+	ctuMem free.! !
 
 !CtuMemTest methodsFor: 'cases' stamp: 'ct 10/28/2025 15:52:38'!
 testPublic
