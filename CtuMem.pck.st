@@ -1,13 +1,13 @@
-'From Cuis7.2 [latest update: #6897] on 20 December 2025 at 11:40:09 pm'!
+'From Cuis7.2 [latest update: #6897] on 23 December 2025 at 10:17:08 am'!
 'Description '!
-!provides: 'CtuMem' 1 32!
+!provides: 'CtuMem' 1 39!
 !requires: 'FFI' 1 55 nil!
 SystemOrganization addCategory: #CtuMem!
 
 
 !classDefinition: #CtuMem category: #CtuMem!
 Object subclass: #CtuMem
-	instanceVariableNames: 'cMem length'
+	instanceVariableNames: 'cMem'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'CtuMem'!
@@ -46,9 +46,17 @@ getArray
 getAt: i
 	^self extGet: cMem at: i.! !
 
-!CtuMem methodsFor: 'public' stamp: 'ct 12/20/2025 23:39:26'!
-getLengthWithoutLast
-	^length - 1.! !
+!CtuMem methodsFor: 'public' stamp: 'ct 12/23/2025 10:07:46'!
+getOffset
+	^self extGetOffset: cMem.! !
+
+!CtuMem methodsFor: 'public' stamp: 'ct 12/23/2025 10:07:34'!
+getSize
+	^self extGetSize: cMem.! !
+
+!CtuMem methodsFor: 'public' stamp: 'ct 12/23/2025 09:42:37'!
+getSizeWithoutLast
+	^(self extGetSize: cMem) - 1.! !
 
 !CtuMem methodsFor: 'external' stamp: 'ct 10/28/2025 15:42:27'!
 extAdd: aCMem string: aString
@@ -80,20 +88,45 @@ extGetArray: aCMem
 	^self externalCallFailed
 ! !
 
-!CtuMem methodsFor: 'external' stamp: 'ct 12/20/2025 23:18:21'!
-extInit: initialLength
+!CtuMem methodsFor: 'external' stamp: 'ct 12/23/2025 10:03:39'!
+extGetOffset: aCMem
+	<cdecl: int32 'ctu_mem_getOffset' (void*) module: 'ctumem'>
+	^self externalCallFailed
+! !
+
+!CtuMem methodsFor: 'external' stamp: 'ct 12/23/2025 10:03:33'!
+extGetSize: aCMem
+	<cdecl: int32 'ctu_mem_getSize' (void*) module: 'ctumem'>
+	^self externalCallFailed
+! !
+
+!CtuMem methodsFor: 'external' stamp: 'ct 12/21/2025 23:11:29'!
+extInit: initialSize
 	<cdecl: void* 'ctu_mem_init' (int32) module: 'ctumem'>
 	^self externalCallFailed
 ! !
 
-!CtuMem methodsFor: 'initialization' stamp: 'ct 12/20/2025 23:18:07'!
-with: aLength
-	length := aLength.
-	cMem := self extInit: length.! !
+!CtuMem methodsFor: 'external' stamp: 'ct 12/21/2025 22:28:41'!
+extInitWithEmptyArray
+	<cdecl: void* 'ctu_mem_initWithEmptyArray' () module: 'ctumem'>
+	^self externalCallFailed
+! !
+
+!CtuMem methodsFor: 'initialization' stamp: 'ct 12/23/2025 09:43:37'!
+with: aSize
+	cMem := self extInit: aSize.! !
+
+!CtuMem methodsFor: 'initialization' stamp: 'ct 12/23/2025 09:43:21'!
+withEmptyArray
+	cMem := self extInitWithEmptyArray.! !
 
 !CtuMem class methodsFor: 'constants' stamp: 'ct 10/28/2025 16:02:50'!
 MAX_STR_LEN
 	^2000.! !
+
+!CtuMem class methodsFor: 'constants' stamp: 'ct 12/21/2025 22:30:21'!
+OFFSET_DONT_FREE_STRS
+	^-1.! !
 
 !CtuMem class methodsFor: 'constants' stamp: 'ct 10/28/2025 15:55:42'!
 RESULT_ERROR
@@ -111,6 +144,11 @@ RESULT_SUCCESS
 initWith: aLength
 	
 	^self new with: aLength; yourself.
+	! !
+
+!CtuMem class methodsFor: 'instance creation' stamp: 'ct 12/21/2025 22:39:22'!
+initWithEmptyArray
+	^self new withEmptyArray; yourself.
 	! !
 
 !CtuMemTest methodsFor: 'cases' stamp: 'ct 10/28/2025 15:57:16'!
@@ -140,8 +178,21 @@ testExternal
 
 	ctuMem extFree: cmem.! !
 
-!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/20/2025 23:39:52'!
-testLengthWithoutLast
+!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/23/2025 10:10:38'!
+testGetOffset
+	| ctuMem |
+
+	ctuMem := CtuMem initWith: 6.
+
+	ctuMem add: 'Hello'.
+	ctuMem add: 'world'.
+
+	self assert: (ctuMem getOffset) equals: 2.
+
+	ctuMem free.! !
+
+!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/23/2025 10:09:58'!
+testGetSize
 	| ctuMem |
 
 	ctuMem := CtuMem initWith: 3.
@@ -150,7 +201,18 @@ testLengthWithoutLast
 	ctuMem add: 'world'.
 	ctuMem add: nil.
 
-	self assert: (ctuMem getLengthWithoutLast) equals: 2.
+	self assert: (ctuMem getSize) equals: 3.
+
+	ctuMem free.! !
+
+!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/23/2025 10:09:27'!
+testInitWithEmptyArray
+	| ctuMem |
+
+	ctuMem := CtuMem initWithEmptyArray.
+
+	self assert: (ctuMem ~= nil).
+	self assert: (ctuMem getOffset) equals: (CtuMem OFFSET_DONT_FREE_STRS).
 
 	ctuMem free.! !
 
@@ -165,5 +227,19 @@ testPublic
 
 	self assert: (ctuMem getAt: 0) fromCString equals: 'Hello'.
 	self assert: (ctuMem getAt: 1) fromCString equals: 'world'.
+
+	ctuMem free.! !
+
+!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/21/2025 23:13:09'!
+testSizeWithoutLast
+	| ctuMem |
+
+	ctuMem := CtuMem initWith: 3.
+
+	ctuMem add: 'Hello'.
+	ctuMem add: 'world'.
+	ctuMem add: nil.
+
+	self assert: (ctuMem getSizeWithoutLast) equals: 2.
 
 	ctuMem free.! !

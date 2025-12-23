@@ -14,6 +14,8 @@ int main (void)
         printf("Null element found\n");
     }
 
+    printf("size: %d, offset: %d\n", ctu_mem_getSize(cmem), ctu_mem_getOffset(cmem));
+
     ctu_mem_free(cmem);
 
     return 0;
