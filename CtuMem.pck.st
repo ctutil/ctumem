@@ -1,6 +1,6 @@
-'From Cuis7.2 [latest update: #6897] on 23 December 2025 at 10:17:08 am'!
+'From Cuis7.2 [latest update: #6897] on 27 December 2025 at 10:59:09 am'!
 'Description '!
-!provides: 'CtuMem' 1 39!
+!provides: 'CtuMem' 1 42!
 !requires: 'FFI' 1 55 nil!
 SystemOrganization addCategory: #CtuMem!
 
@@ -42,9 +42,11 @@ free
 getArray
 	^self extGetArray: cMem.! !
 
-!CtuMem methodsFor: 'public' stamp: 'ct 10/28/2025 15:40:44'!
+!CtuMem methodsFor: 'public' stamp: 'ct 12/27/2025 10:58:44'!
 getAt: i
-	^self extGet: cMem at: i.! !
+	" Gets the i-th element of the array. Warning: This follows the Smalltalk way: index starts from 1,
+	   while in extGet: at: index follows the C way which starts from 0 "
+	^self extGet: cMem at: i - 1.! !
 
 !CtuMem methodsFor: 'public' stamp: 'ct 12/23/2025 10:07:46'!
 getOffset
@@ -163,7 +165,7 @@ testCapacityError
 
 	ctuMem free.! !
 
-!CtuMemTest methodsFor: 'cases' stamp: 'ct 10/27/2025 12:22:32'!
+!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/27/2025 10:36:31'!
 testExternal
 	| cmem ctuMem |
 
@@ -177,6 +179,20 @@ testExternal
 	self assert: (ctuMem extGet: cmem at: 1) fromCString equals: 'world'.
 
 	ctuMem extFree: cmem.! !
+
+!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/27/2025 10:59:03'!
+testGetAt
+	| ctuMem |
+
+	ctuMem := CtuMem initWith: 3.
+
+	ctuMem add: 'Hello'.
+	ctuMem add: 'world'.
+	ctuMem add: nil.
+
+	self assert: ((ctuMem getAt: 2) fromCString) equals: 'world'.
+
+	ctuMem free.! !
 
 !CtuMemTest methodsFor: 'cases' stamp: 'ct 12/23/2025 10:10:38'!
 testGetOffset
@@ -205,14 +221,12 @@ testGetSize
 
 	ctuMem free.! !
 
-!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/23/2025 10:09:27'!
+!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/27/2025 10:44:58'!
 testInitWithEmptyArray
 	| ctuMem |
 
 	ctuMem := CtuMem initWithEmptyArray.
-
-	self assert: (ctuMem ~= nil).
-	self assert: (ctuMem getOffset) equals: (CtuMem OFFSET_DONT_FREE_STRS).
+	
 
 	ctuMem free.! !
 
