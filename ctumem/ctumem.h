@@ -10,12 +10,8 @@
 #define CTU_MEM_RESULT_ERROR            -2
 #define CTU_MEM_RESULT_ERROR_CAPACITY   -3
 
-#define CTU_MEM_OFFSET_DONT_FREE_STRS   -1
-
 typedef struct {
     int size CTU_MEM_INIT_ONLY;
-    // = CTU_MEM_OFFSET_DONT_FREE_STRS if:
-    //   not initialized with the _init fn
     int offset;  
     char **strs;
 } ctu_Mem;

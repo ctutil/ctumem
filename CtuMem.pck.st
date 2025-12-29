@@ -1,6 +1,6 @@
-'From Cuis7.2 [latest update: #6897] on 27 December 2025 at 10:59:09 am'!
+'From Cuis7.2 [latest update: #6897] on 29 December 2025 at 2:46:12 pm'!
 'Description '!
-!provides: 'CtuMem' 1 42!
+!provides: 'CtuMem' 1 46!
 !requires: 'FFI' 1 55 nil!
 SystemOrganization addCategory: #CtuMem!
 
@@ -42,10 +42,14 @@ free
 getArray
 	^self extGetArray: cMem.! !
 
-!CtuMem methodsFor: 'public' stamp: 'ct 12/27/2025 10:58:44'!
+!CtuMem methodsFor: 'public' stamp: 'ct 12/28/2025 11:03:41'!
 getAt: i
 	" Gets the i-th element of the array. Warning: This follows the Smalltalk way: index starts from 1,
 	   while in extGet: at: index follows the C way which starts from 0 "
+	(i <= 0) ifTrue: [
+		^self error: 'Invalid index: ', (i asString).
+	].
+	
 	^self extGet: cMem at: i - 1.! !
 
 !CtuMem methodsFor: 'public' stamp: 'ct 12/23/2025 10:07:46'!
@@ -108,12 +112,6 @@ extInit: initialSize
 	^self externalCallFailed
 ! !
 
-!CtuMem methodsFor: 'external' stamp: 'ct 12/21/2025 22:28:41'!
-extInitWithEmptyArray
-	<cdecl: void* 'ctu_mem_initWithEmptyArray' () module: 'ctumem'>
-	^self externalCallFailed
-! !
-
 !CtuMem methodsFor: 'initialization' stamp: 'ct 12/23/2025 09:43:37'!
 with: aSize
 	cMem := self extInit: aSize.! !
@@ -125,10 +123,6 @@ withEmptyArray
 !CtuMem class methodsFor: 'constants' stamp: 'ct 10/28/2025 16:02:50'!
 MAX_STR_LEN
 	^2000.! !
-
-!CtuMem class methodsFor: 'constants' stamp: 'ct 12/21/2025 22:30:21'!
-OFFSET_DONT_FREE_STRS
-	^-1.! !
 
 !CtuMem class methodsFor: 'constants' stamp: 'ct 10/28/2025 15:55:42'!
 RESULT_ERROR
@@ -146,11 +140,6 @@ RESULT_SUCCESS
 initWith: aLength
 	
 	^self new with: aLength; yourself.
-	! !
-
-!CtuMem class methodsFor: 'instance creation' stamp: 'ct 12/21/2025 22:39:22'!
-initWithEmptyArray
-	^self new withEmptyArray; yourself.
 	! !
 
 !CtuMemTest methodsFor: 'cases' stamp: 'ct 10/28/2025 15:57:16'!
@@ -194,6 +183,21 @@ testGetAt
 
 	ctuMem free.! !
 
+!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/28/2025 12:28:06'!
+testGetAt_invalid
+	| ctuMem err |
+
+	ctuMem := CtuMem initWith: 3.
+
+	ctuMem add: 'Hello'.
+	ctuMem add: 'world'.
+	ctuMem add: nil.
+
+	err := self should: [ ctuMem getAt: 0 ]
+			raise: Error.
+
+	ctuMem free.! !
+
 !CtuMemTest methodsFor: 'cases' stamp: 'ct 12/23/2025 10:10:38'!
 testGetOffset
 	| ctuMem |
@@ -218,29 +222,6 @@ testGetSize
 	ctuMem add: nil.
 
 	self assert: (ctuMem getSize) equals: 3.
-
-	ctuMem free.! !
-
-!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/27/2025 10:44:58'!
-testInitWithEmptyArray
-	| ctuMem |
-
-	ctuMem := CtuMem initWithEmptyArray.
-	
-
-	ctuMem free.! !
-
-!CtuMemTest methodsFor: 'cases' stamp: 'ct 10/28/2025 15:52:38'!
-testPublic
-	| ctuMem |
-
-	ctuMem := CtuMem initWith: 2.
-
-	ctuMem add: 'Hello'.
-	ctuMem add: 'world'.
-
-	self assert: (ctuMem getAt: 0) fromCString equals: 'Hello'.
-	self assert: (ctuMem getAt: 1) fromCString equals: 'world'.
 
 	ctuMem free.! !
 

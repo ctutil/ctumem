@@ -3,23 +3,6 @@
 #include <string.h>
 #include "ctumem.h"
 
-/**
- * Thus we don't allocate the array here, the ctu_mem_free 
- * function won't free the `strs` field. You should do it 
- * manually!
- */
-extern ctu_Mem *ctu_mem_initWithEmptyArray (void)
-{
-    ctu_Mem *cmem = malloc(sizeof(ctu_Mem));
-
-    if (!cmem) {
-        return NULL;
-    }
-
-    cmem->offset = CTU_MEM_OFFSET_DONT_FREE_STRS;
-
-    return cmem;
-}
 
 extern ctu_Mem *ctu_mem_init (int size)
 {
@@ -92,11 +75,6 @@ extern char *ctu_mem_get (ctu_Mem *cmem, int index)
 
 extern void ctu_mem_free (ctu_Mem *cmem)
 {
-    if (cmem->offset == CTU_MEM_OFFSET_DONT_FREE_STRS) {
-        free(cmem);
-        return;
-    }
-
     for (int i = 0; i < cmem->offset; i++) {
         if (cmem->strs[i]) {
           free(cmem->strs[i]);
