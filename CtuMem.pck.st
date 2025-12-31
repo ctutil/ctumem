@@ -1,6 +1,6 @@
-'From Cuis7.2 [latest update: #6897] on 29 December 2025 at 2:46:12 pm'!
+'From Cuis7.2 [latest update: #6897] on 31 December 2025 at 10:57:44 am'!
 'Description '!
-!provides: 'CtuMem' 1 46!
+!provides: 'CtuMem' 1 47!
 !requires: 'FFI' 1 55 nil!
 SystemOrganization addCategory: #CtuMem!
 
@@ -115,10 +115,6 @@ extInit: initialSize
 !CtuMem methodsFor: 'initialization' stamp: 'ct 12/23/2025 09:43:37'!
 with: aSize
 	cMem := self extInit: aSize.! !
-
-!CtuMem methodsFor: 'initialization' stamp: 'ct 12/23/2025 09:43:21'!
-withEmptyArray
-	cMem := self extInitWithEmptyArray.! !
 
 !CtuMem class methodsFor: 'constants' stamp: 'ct 10/28/2025 16:02:50'!
 MAX_STR_LEN
