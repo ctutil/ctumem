@@ -1,6 +1,6 @@
-'From Cuis7.2 [latest update: #6897] on 31 December 2025 at 10:57:44 am'!
+'From Cuis7.2 [latest update: #6897] on 31 December 2025 at 9:57:08 pm'!
 'Description '!
-!provides: 'CtuMem' 1 47!
+!provides: 'CtuMem' 1 55!
 !requires: 'FFI' 1 55 nil!
 SystemOrganization addCategory: #CtuMem!
 
@@ -138,6 +138,24 @@ initWith: aLength
 	^self new with: aLength; yourself.
 	! !
 
+!CtuMem class methodsFor: 'public' stamp: 'ct 12/31/2025 21:55:37'!
+fgets: aString
+	^self extFgets: aString.! !
+
+!CtuMem class methodsFor: 'public' stamp: 'ct 12/31/2025 21:57:06'!
+print: aString
+	self extPrint: aString.! !
+
+!CtuMem class methodsFor: 'external' stamp: 'ct 12/31/2025 21:55:51'!
+extFgets: aString
+	<cdecl: char* 'ctu_mem_gets' (char*) module: 'ctumem'>
+	^self externalCallFailed! !
+
+!CtuMem class methodsFor: 'external' stamp: 'ct 12/31/2025 15:55:35'!
+extPrint: aString
+	<cdecl: void 'ctu_mem_print' (char*) module: 'ctumem'>
+	^self externalCallFailed! !
+
 !CtuMemTest methodsFor: 'cases' stamp: 'ct 10/28/2025 15:57:16'!
 testCapacityError
 	| ctuMem |
@@ -220,6 +238,10 @@ testGetSize
 	self assert: (ctuMem getSize) equals: 3.
 
 	ctuMem free.! !
+
+!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/31/2025 15:57:34'!
+testPrint
+	CtuMem print: 'Hello'.! !
 
 !CtuMemTest methodsFor: 'cases' stamp: 'ct 12/21/2025 23:13:09'!
 testSizeWithoutLast

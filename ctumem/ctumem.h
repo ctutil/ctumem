@@ -4,7 +4,7 @@
 // Changes value only on init
 #define CTU_MEM_INIT_ONLY
 
-#define CTU_MEM_MAX_STR_LEN       2000
+#define CTU_MEM_MAX_STR_LEN       4096
 
 #define CTU_MEM_RESULT_SUCCESS           0
 #define CTU_MEM_RESULT_ERROR            -2
@@ -25,5 +25,8 @@ extern void ctu_mem_free (ctu_Mem *cmem);
 extern char *ctu_mem_get (ctu_Mem *cmem, int index);
 extern int ctu_mem_getSize (ctu_Mem *cmem);
 extern int ctu_mem_getOffset (ctu_Mem *cmem);
+
+extern void ctu_mem_print (char *s);
+extern char *ctu_mem_gets (char *s);
 
 #endif

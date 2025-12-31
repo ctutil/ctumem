@@ -4,7 +4,7 @@
 #include "ctumem.h"
 
 
-extern ctu_Mem *ctu_mem_init (int size)
+ctu_Mem *ctu_mem_init (int size)
 {
     ctu_Mem *cmem = malloc(sizeof(ctu_Mem));
 
@@ -26,7 +26,7 @@ extern ctu_Mem *ctu_mem_init (int size)
 /**
  * NULL is also accepted
  */
-extern int ctu_mem_add (ctu_Mem *cmem, char *newstr)
+int ctu_mem_add (ctu_Mem *cmem, char *newstr)
 {
     // add NULL element
     if (newstr == NULL) {
@@ -50,7 +50,7 @@ extern int ctu_mem_add (ctu_Mem *cmem, char *newstr)
     return CTU_MEM_RESULT_SUCCESS;
 }
 
-extern char **ctu_mem_getArray (ctu_Mem *cmem) 
+char **ctu_mem_getArray (ctu_Mem *cmem) 
 {
     return cmem->strs;
 }
@@ -61,19 +61,19 @@ extern char **ctu_mem_getArray (ctu_Mem *cmem)
  * At the end ctu_mem_free is to be called, either on success or 
  * on error.
  */
-extern int ctu_mem_check (ctu_Mem *cmem)
+int ctu_mem_check (ctu_Mem *cmem)
 {
    if (cmem->offset != cmem->size) return CTU_MEM_RESULT_ERROR_CAPACITY;
 
    return CTU_MEM_RESULT_SUCCESS;
 }
 
-extern char *ctu_mem_get (ctu_Mem *cmem, int index)
+char *ctu_mem_get (ctu_Mem *cmem, int index)
 {
    return cmem->strs[index];
 }
 
-extern void ctu_mem_free (ctu_Mem *cmem)
+void ctu_mem_free (ctu_Mem *cmem)
 {
     for (int i = 0; i < cmem->offset; i++) {
         if (cmem->strs[i]) {
@@ -85,12 +85,25 @@ extern void ctu_mem_free (ctu_Mem *cmem)
     free(cmem);
 }
 
-extern int ctu_mem_getSize (ctu_Mem *cmem)
+int ctu_mem_getSize (ctu_Mem *cmem)
 {
     return cmem->size;
 }
 
-extern int ctu_mem_getOffset (ctu_Mem *cmem)
+int ctu_mem_getOffset (ctu_Mem *cmem)
 {
     return cmem->offset;
 }
+
+void ctu_mem_print (char *s)
+{
+    printf("%s", s);    
+    fflush(stdout);
+}
+
+char *ctu_mem_gets (char *s)
+{
+    fgets(s, CTU_MEM_MAX_STR_LEN, stdin);
+    return s;
+}
+
