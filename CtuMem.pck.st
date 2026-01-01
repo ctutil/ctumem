@@ -1,6 +1,6 @@
-'From Cuis7.2 [latest update: #6897] on 1 January 2026 at 12:45:47 pm'!
+'From Cuis7.2 [latest update: #6897] on 1 January 2026 at 12:48:31 pm'!
 'Description '!
-!provides: 'CtuMem' 1 59!
+!provides: 'CtuMem' 1 60!
 !requires: 'FFI' 1 55 nil!
 SystemOrganization addCategory: #CtuMem!
 
@@ -138,13 +138,13 @@ initWith: aLength
 	^self new with: aLength; yourself.
 	! !
 
-!CtuMem class methodsFor: 'public' stamp: 'ct 1/1/2026 12:45:36'!
+!CtuMem class methodsFor: 'public' stamp: 'ct 1/1/2026 12:48:28'!
 fgets: aString
 	| utf  stringResult |
 	stringResult := self extFgets: aString.
 	utf := (UnicodeString fromUtf8Bytes: (stringResult asByteArray)).
 	
-	^ utf.! !
+	^utf.! !
 
 !CtuMem class methodsFor: 'public' stamp: 'ct 1/1/2026 12:27:07'!
 print: aString
