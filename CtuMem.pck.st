@@ -1,6 +1,6 @@
-'From Cuis7.2 [latest update: #6897] on 31 December 2025 at 9:57:08 pm'!
+'From Cuis7.2 [latest update: #6897] on 1 January 2026 at 12:45:47 pm'!
 'Description '!
-!provides: 'CtuMem' 1 55!
+!provides: 'CtuMem' 1 59!
 !requires: 'FFI' 1 55 nil!
 SystemOrganization addCategory: #CtuMem!
 
@@ -138,13 +138,26 @@ initWith: aLength
 	^self new with: aLength; yourself.
 	! !
 
-!CtuMem class methodsFor: 'public' stamp: 'ct 12/31/2025 21:55:37'!
+!CtuMem class methodsFor: 'public' stamp: 'ct 1/1/2026 12:45:36'!
 fgets: aString
-	^self extFgets: aString.! !
+	| utf  stringResult |
+	stringResult := self extFgets: aString.
+	utf := (UnicodeString fromUtf8Bytes: (stringResult asByteArray)).
+	
+	^ utf.! !
 
-!CtuMem class methodsFor: 'public' stamp: 'ct 12/31/2025 21:57:06'!
+!CtuMem class methodsFor: 'public' stamp: 'ct 1/1/2026 12:27:07'!
 print: aString
-	self extPrint: aString.! !
+	(aString className = UnicodeString name) ifTrue: [
+		self extPrint: (aString asByteArray asString).
+	] ifFalse: [
+		self extPrint: aString.
+	].! !
+
+!CtuMem class methodsFor: 'public' stamp: 'ct 1/1/2026 11:40:27'!
+prompt: aPrompt fgets: aString
+	self print: aPrompt.
+	^self extFgets: aString.! !
 
 !CtuMem class methodsFor: 'external' stamp: 'ct 12/31/2025 21:55:51'!
 extFgets: aString
