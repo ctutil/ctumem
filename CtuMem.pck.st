@@ -1,6 +1,6 @@
-'From Cuis7.2 [latest update: #6897] on 10 January 2026 at 9:35:57 am'!
+'From Cuis7.2 [latest update: #6897] on 10 January 2026 at 9:57:13 am'!
 'Description '!
-!provides: 'CtuMem' 1 62!
+!provides: 'CtuMem' 1 63!
 !requires: 'FFI' 1 55 nil!
 SystemOrganization addCategory: #CtuMem!
 
@@ -270,8 +270,16 @@ testGetSize
 
 	ctuMem free.! !
 
-!CtuMemTest methodsFor: 'cases' stamp: 'ct 12/31/2025 15:57:34'!
+!CtuMemTest methodsFor: 'cases' stamp: 'ct 1/10/2026 09:56:59'!
 testPrint
+	"
+	| input |
+
+	input := CtuMem fgets: (String new: 80).
+	(input withBlanksTrimmed  = 'stop server') ifTrue: [
+		CtuMem print: 'The server stops!!'; printNl.
+	].
+	"
 	CtuMem print: 'Hello'.! !
 
 !CtuMemTest methodsFor: 'cases' stamp: 'ct 12/21/2025 23:13:09'!
