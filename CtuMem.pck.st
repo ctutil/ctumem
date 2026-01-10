@@ -1,6 +1,6 @@
-'From Cuis7.2 [latest update: #6897] on 1 January 2026 at 12:48:31 pm'!
+'From Cuis7.2 [latest update: #6897] on 10 January 2026 at 9:35:57 am'!
 'Description '!
-!provides: 'CtuMem' 1 60!
+!provides: 'CtuMem' 1 62!
 !requires: 'FFI' 1 55 nil!
 SystemOrganization addCategory: #CtuMem!
 
@@ -138,8 +138,14 @@ initWith: aLength
 	^self new with: aLength; yourself.
 	! !
 
-!CtuMem class methodsFor: 'public' stamp: 'ct 1/1/2026 12:48:28'!
+!CtuMem class methodsFor: 'public' stamp: 'ct 1/10/2026 09:19:48'!
 fgets: aString
+"Example:
+| input |
+
+input := CtuMem fgets: (String new: 80).
+Transcript show: 'Got command: >', (input withBlanksTrimmed), '<'; cr.
+"
 	| utf  stringResult |
 	stringResult := self extFgets: aString.
 	utf := (UnicodeString fromUtf8Bytes: (stringResult asByteArray)).
@@ -153,6 +159,18 @@ print: aString
 	] ifFalse: [
 		self extPrint: aString.
 	].! !
+
+!CtuMem class methodsFor: 'public' stamp: 'ct 1/10/2026 09:34:35'!
+printCr
+	self extPrint: (String with: (Character cr)).! !
+
+!CtuMem class methodsFor: 'public' stamp: 'ct 1/10/2026 09:35:14'!
+printLf
+	self extPrint: (String with: (Character lf)).! !
+
+!CtuMem class methodsFor: 'public' stamp: 'ct 1/10/2026 09:35:24'!
+printNl
+	self printCr; printLf.! !
 
 !CtuMem class methodsFor: 'public' stamp: 'ct 1/1/2026 11:40:27'!
 prompt: aPrompt fgets: aString
